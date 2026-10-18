@@ -12,7 +12,7 @@ typedef OnTokenRefreshedCallback = void Function(
 );
 
 /// A [QueuedInterceptor] that automatically manages Authorization headers,
-/// injects Bearer tokens, and transparently refreshes expired access tokens
+/// injects Bearer tokens, and transparently refreshes expired access tokensFff
 /// when encountering a 401 Unauthorized response.
 class AuthInterceptor extends QueuedInterceptor {
   final TokenStorage tokenStorage;
