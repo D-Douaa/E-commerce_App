@@ -1,3 +1,4 @@
+
 class ProductModel {
   final String id;
   final String name;
@@ -6,6 +7,7 @@ class ProductModel {
   final double discountPrice;
   final double rating;
   final String imageUrl;
+  final List<String> images;
 
   ProductModel({
     required this.id,
@@ -15,20 +17,30 @@ class ProductModel {
     required this.discountPrice,
     required this.rating,
     required this.imageUrl,
-  });
-  factory ProductModel.fromJson(Map<String, dynamic> json) {
-  final price = (json['price'] as num).toDouble();
-  final discountPercentage =
-      (json['discountPercentage'] as num).toDouble();
+    List<String>? images,
+  }) : images = images ?? [imageUrl];
 
-  return ProductModel(
-    id: json['id'].toString(),
-    name: json['title'] as String,
-    description: json['description'] as String,
-    price: price,
-    discountPrice: price * (1 - discountPercentage / 100),
-    rating: (json['rating'] as num).toDouble(),
-    imageUrl: json['thumbnail'] as String,
-  );
-}
+  factory ProductModel.fromJson(Map<String, dynamic> json) {
+    final price = (json['price'] as num).toDouble();
+    final discountPercentage =
+        (json['discountPercentage'] as num).toDouble();
+
+    final imageUrl = json['thumbnail'] as String;
+
+    final images = (json['images'] as List<dynamic>?)
+            ?.map((image) => image.toString())
+            .toList() ??
+        [imageUrl];
+
+    return ProductModel(
+      id: json['id'].toString(),
+      name: json['title'] as String,
+      description: json['description'] as String,
+      price: price,
+      discountPrice: price * (1 - discountPercentage / 100),
+      rating: (json['rating'] as num).toDouble(),
+      imageUrl: imageUrl,
+      images: images,
+    );
+  }
 }

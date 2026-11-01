@@ -6,8 +6,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/datasources/product_details_remote_data_source.dart';
 import '../cubit/product_details_cubit.dart';
 import '../cubit/product_details_state.dart';
+import '../widgets/product_image_slider.dart';
 
-class ProductDetailsView extends StatelessWidget {
+class ProductDetailsView extends StatefulWidget {
   final String productId;
 
   const ProductDetailsView({
@@ -20,6 +21,26 @@ class ProductDetailsView extends StatelessWidget {
   static const Color grey = Color(0xFF9098B1);
 
   @override
+  State<ProductDetailsView> createState() => _ProductDetailsViewState();
+}
+
+class _ProductDetailsViewState extends State<ProductDetailsView> {
+  String selectedSize = 'M';
+  double get imageHeight {
+    switch (selectedSize) {
+      case 'S':
+        return 220;
+      case 'M':
+        return 260;
+      case 'L':
+        return 300;
+      case 'XL':
+        return 340;
+      default:
+        return 260;
+    }
+  }
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
@@ -29,12 +50,12 @@ class ProductDetailsView extends StatelessWidget {
         elevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back, color: navy),
+          icon: const Icon(Icons.arrow_back, color: ProductDetailsView.navy),
         ),
         title: const Text(
           'Product Details',
           style: TextStyle(
-            color: navy,
+            color: ProductDetailsView.navy,
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
@@ -45,12 +66,12 @@ class ProductDetailsView extends StatelessWidget {
           dataSource: ProductDetailsRemoteDataSource(
             dioClient: DioClient.instance,
           ),
-        )..getProductDetails(productId),
+        )..getProductDetails(widget.productId),
         child: BlocBuilder<ProductDetailsCubit, ProductDetailsState>(
           builder: (context, state) {
             if (state is ProductDetailsLoading) {
               return const Center(
-                child: CircularProgressIndicator(color: blue),
+                child: CircularProgressIndicator(color: ProductDetailsView.blue),
               );
             }
 
@@ -58,7 +79,7 @@ class ProductDetailsView extends StatelessWidget {
               return Center(
                 child: Text(
                   state.message,
-                  style: const TextStyle(color: navy),
+                  style: const TextStyle(color: ProductDetailsView.navy),
                 ),
               );
             }
@@ -74,23 +95,10 @@ class ProductDetailsView extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
-                        width: double.infinity,
-                        height: 300,
-                        child: Image.network(
-                          product.imageUrl,
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Center(
-                              child: Icon(
-                                Icons.image_not_supported_outlined,
-                                size: 48,
-                                color: grey,
-                              ),
-                            );
-                          },
-                        ),
-                      ),
+                     ProductImageSlider(
+  images: product.images,
+  height: imageHeight,
+),
                       const SizedBox(height: 20),
 
                       Row(
@@ -102,14 +110,14 @@ class ProductDetailsView extends StatelessWidget {
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
-                                color: navy,
+                                color: ProductDetailsView.navy,
                               ),
                             ),
                           ),
                           const SizedBox(width: 12),
                           const Icon(
                             Icons.favorite_border,
-                            color: navy,
+                            color: ProductDetailsView.navy,
                             size: 24,
                           ),
                         ],
@@ -127,7 +135,7 @@ class ProductDetailsView extends StatelessWidget {
                           Text(
                             product.rating.toStringAsFixed(1),
                             style: const TextStyle(
-                              color: navy,
+                              color: ProductDetailsView.navy,
                               fontSize: 14,
                             ),
                           ),
@@ -142,7 +150,7 @@ class ProductDetailsView extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              color: hasDiscount ? blue : navy,
+                              color: hasDiscount ? ProductDetailsView.blue : ProductDetailsView.navy,
                             ),
                           ),
                           if (hasDiscount) ...[
@@ -151,7 +159,7 @@ class ProductDetailsView extends StatelessWidget {
                               '\$${product.price.toStringAsFixed(2)}',
                               style: const TextStyle(
                                 fontSize: 14,
-                                color: grey,
+                                color: ProductDetailsView.grey,
                                 decoration: TextDecoration.lineThrough,
                               ),
                             ),
@@ -165,17 +173,49 @@ class ProductDetailsView extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 14,
                           height: 1.6,
-                          color: grey,
+                          color: ProductDetailsView.grey,
                         ),
                       ),
                       const SizedBox(height: 24),
+const Text(
+  'Select Size',
+  style: TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.bold,
+    color: ProductDetailsView.navy,
+  ),
+),
+const SizedBox(height: 12),
 
+Wrap(
+  spacing: 12,
+  children: ['S', 'M', 'L', 'XL'].map((size) {
+    final isSelected = selectedSize == size;
+
+    return ChoiceChip(
+      label: Text(size),
+      selected: isSelected,
+      onSelected: (selected) {
+        setState(() {
+          selectedSize = size;
+        });
+      },
+      selectedColor: ProductDetailsView.blue,
+      backgroundColor: Colors.white,
+      labelStyle: TextStyle(
+        color: isSelected ? Colors.white : ProductDetailsView.navy,
+      ),
+    );
+  }).toList(),
+),
+
+const SizedBox(height: 24),
                       const Text(
                         'Select Color',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: navy,
+                          color: ProductDetailsView.navy,
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -210,7 +250,7 @@ class ProductDetailsView extends StatelessWidget {
           child: ElevatedButton(
             onPressed: () {},
             style: ElevatedButton.styleFrom(
-              backgroundColor: blue,
+              backgroundColor: ProductDetailsView.blue,
               foregroundColor: Colors.white,
               elevation: 0,
               shape: RoundedRectangleBorder(
