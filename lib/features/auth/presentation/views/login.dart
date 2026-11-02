@@ -1,9 +1,9 @@
 
 import 'package:e_commerce/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:e_commerce/features/auth/presentation/cubit/auth_state.dart';
-import 'package:e_commerce/features/products/presentation/views/products_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/responsive/responsive_context.dart';
@@ -42,12 +42,8 @@ class _LoginViewState extends State<LoginView> {
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is AuthSuccess) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const ProductsView(),
-            ),
-          );
+         context.go('/home');
+          
         }else if (state is AuthError){
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
