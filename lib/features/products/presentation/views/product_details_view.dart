@@ -2,7 +2,7 @@
 import 'package:e_commerce/core/network/dio_client.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import '../widgets/product_rating_section.dart';
 import '../../data/datasources/product_details_remote_data_source.dart';
 import '../cubit/product_details_cubit.dart';
 import '../cubit/product_details_state.dart';
@@ -26,6 +26,7 @@ class ProductDetailsView extends StatefulWidget {
 
 class _ProductDetailsViewState extends State<ProductDetailsView> {
   String selectedSize = 'M';
+  bool isFavorite = false;
   double get imageHeight {
     switch (selectedSize) {
       case 'S':
@@ -115,11 +116,18 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                             ),
                           ),
                           const SizedBox(width: 12),
-                          const Icon(
-                            Icons.favorite_border,
-                            color: ProductDetailsView.navy,
-                            size: 24,
-                          ),
+                          IconButton(
+  onPressed: () {
+    setState(() {
+      isFavorite = !isFavorite;
+    });
+  },
+  icon: Icon(
+    isFavorite ? Icons.favorite : Icons.favorite_border,
+    color: isFavorite ? Colors.red : ProductDetailsView.navy,
+    size: 24,
+  ),
+),
                         ],
                       ),
                       const SizedBox(height: 12),
@@ -176,6 +184,8 @@ class _ProductDetailsViewState extends State<ProductDetailsView> {
                           color: ProductDetailsView.grey,
                         ),
                       ),
+                      const SizedBox(height: 24),
+                      const ProductRatingSection(),
                       const SizedBox(height: 24),
 const Text(
   'Select Size',
